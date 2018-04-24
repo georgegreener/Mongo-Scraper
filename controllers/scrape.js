@@ -1,44 +1,81 @@
-// Import express
 var express = require("express");
+var bodyParser = require("body-parser");
+var mongoose = require("mongoose");
+var cheerio = require("cheerio");
+var request = require("request");
+var exphbs = require("express-handlebars");
 
 var app = express();
 
-// Import cheerio module for scraping
-var cheerio = require("cheerio");
+// Models are imported here
+var db = require("../models");
 
-// Import request module for a specific webpage
-var request = require("request");
+// module.exports = function(app) {
 
-module.exports = function(app) {
+  // Route hit on page-load
+  app.get("/", function(req, res) {
 
-  app.get("/scrape", function(req, res) {
+    // Search for all existing articles in database
+    db.Article.find({})
+      .then(function(savedArticles) {
 
-    // Make a request to "nature.com"
-    request("https://www.kotaku.com/", function(error, response, html) {
+        // Creates a reference to headlines existing in MongoDB for comparison
+        let savedHeadlines = savedArticles.map(article => article.headline);
 
-      if (error) console.log(error);
+        // Make a request to "nature.com"
+        request("https://www.nature.com/nature/", function(error, response, html) {
 
-      // Load the HTML body into cheerio
-      var $ = cheerio.load(html);
-    
-      // Empty array to store scraped data
-      var results = [];
-    
-      $("h3.itemprop").each(function(i, element) {
+          // Load the HTML body into cheerio
+          var $ = cheerio.load(html);
+      
+          // Use cheerio to target each div with the property-value of [itemtype='http://schema.org/ScholarlyArticle']
+          $("div[itemtype='http://schema.org/ScholarlyArticle']").each(function(i, element) {
 
-        var headline = $(element).text();
+            // Create a newArticle object with extracted values
+            var thisArticle = {
+              headline: $(this).children("h3").children().text().trim(),
+              photo: $(this).children("h3").children().children().attr("src"),
+              datePublished: $(this).children().children("time").text(),
+              author: $(this).children("ul").children().text().trim(),
+              summary: $(this).children("div").children().text().trim(),
+              url: "https://www.nature.com" + $(this).children("h3").children().attr("href")
+            }
 
-        console.log(headline);
+            if (savedHeadlines.includes(thisArticle.headline)) {
+              console.log("This article already exists");
+            }
+            else {
+              console.log("New article! Adding to database");
 
+              db.Article.create(thisArticle)
+                .then(function(data) {
+                  console.log(data);
+                })
+                .catch(function(err) {
+                  console.log(err);
+                });
+                
+            }
 
+          })
 
-      });
+      })
 
+    })
+    .catch(function(err) {
+      console.log(err);
     });
 
-    res.send("ok");
+    db.Article.find({})
+      .then(function(savedArticles) {
+        res.render("index", { articles: savedArticles });
+      })
+      .catch(function(err) {
+        console.log(err);
+      })
 
   });
 
+// }
 
-}
+module.exports = app;
