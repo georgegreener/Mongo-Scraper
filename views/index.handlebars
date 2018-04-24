@@ -1,0 +1,14 @@
+<h1>Nature Reader</h1>
+
+<ul>
+  {{#each articles}}
+    <li>
+      <p><span class="label">Headline:</span> {{this.headline}}</p>
+      <p><span class="label">Photo:</span> {{this.photo}}</p>
+      <p><span class="label">Date Published:</span> {{this.datePublished}}</p>
+      <p><span class="label">Author:</span> {{this.author}}</p>
+      <p><span class="label">Summary:</span> {{this.summary}}</p>
+      <p><span class="label">URL:</span> {{this.url}}</p>
+    </li>
+  {{/each}}
+</ul>
