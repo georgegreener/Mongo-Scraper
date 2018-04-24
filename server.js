@@ -5,6 +5,7 @@ var mongoose = require("mongoose");
 var cheerio = require("cheerio");
 var request = require("request");
 var exphbs = require("express-handlebars");
+var path = require("path");
 
 var PORT = process.env.PORT || 8080;
 
@@ -21,6 +22,8 @@ var db = require("./models");
 
 // Store access to Express in variable
 var app = express();
+
+app.use("/static", express.static(path.join(__dirname, "public")));
 
 // Setting up public folder, and how Express will parse information
 // app.use(express.static("public"));
