@@ -9,8 +9,8 @@ var path = require("path");
 
 var PORT = process.env.PORT || 8080;
 
-// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+// If deployed, use the deployed database. Otherwise use the local natureReader database
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/natureReader";
 
 // Set mongoose to leverage built in JavaScript ES6 Promises
 // Connect to the Mongo DB
@@ -35,8 +35,10 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Our server routes will be imported here
-var controllers = require("./controllers/scrape");
-app.use(controllers);
+var scrape = require("./controllers/scrape");
+var main = require("./controllers/main");
+app.use(scrape);
+app.use(main);
 
 // Starts server
 app.listen(PORT, function() {

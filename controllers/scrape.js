@@ -1,3 +1,4 @@
+// Dependencies
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
@@ -9,8 +10,6 @@ var app = express();
 
 // Models are imported here
 var db = require("../models");
-
-// module.exports = function(app) {
 
   // Route hit on page-load
   app.get("/", function(req, res) {
@@ -43,10 +42,11 @@ var db = require("../models");
 
             if (savedHeadlines.includes(thisArticle.headline)) {
               console.log("This article already exists");
+              console.log(thisArticle);
             }
             else {
               console.log("New article! Adding to database");
-
+              console.log(thisArticle);
               db.Article.create(thisArticle)
                 .then(function(data) {
                   console.log(data);
@@ -75,7 +75,5 @@ var db = require("../models");
       })
 
   });
-
-// }
 
 module.exports = app;

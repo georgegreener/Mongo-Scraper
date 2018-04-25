@@ -4,6 +4,8 @@
   Read the latest from one of the world's premiere science journals
 </h2>
 
+<button id="scrape">Scrape</button>
+
 <ul>
   {{#each articles}}
     <li>
@@ -12,7 +14,8 @@
       <p><span class="datePublished">Date Published:</span> {{this.datePublished}}</p>
       <p><span class="author">Author:</span> {{this.author}}</p>
       <p><span class="summary"></span>{{this.summary}}</p>
-      <p><span class="url"></span>{{this.url}}</p>
+      <p><span class="url"></span><a href="{{this.url}}">Read the full article</a></p>
+      <button data-id="{{this._id}}"><span class="comment"></span>Leave a comment</button>
     </li>
   {{/each}}
 </ul>
