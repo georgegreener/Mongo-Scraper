@@ -4,8 +4,6 @@
   Read the latest from one of the world's premiere science journals
 </h2>
 
-<button id="scrape">Scrape</button>
-
 <ul>
   {{#each articles}}
     <li>
@@ -15,7 +13,68 @@
       <p><span class="author">Author:</span> {{this.author}}</p>
       <p><span class="summary"></span>{{this.summary}}</p>
       <p><span class="url"></span><a href="{{this.url}}">Read the full article</a></p>
-      <button data-id="{{this._id}}"><span class="comment"></span>Leave a comment</button>
+      <button class="comment" data-id="{{this._id}}"><span class="comment"></span>View comments</button>
+      <div id="{{this._id}}"></div>
     </li>
   {{/each}}
 </ul>
+
+<script
+  		src="http://code.jquery.com/jquery-3.3.1.min.js"
+  		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  		crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+  $(document).on("click", ".comment", function() {
+    console.log("clicked");
+    var thisId = $(this).attr("data-id");
+
+    $.ajax({
+      method: "GET",
+      url: "/articles/" + thisId
+    })
+      .then(function(data) {
+        console.log(data);
+        console.log(data.headline);
+        console.log(data.comment.body);
+        if (data.comment.body) {
+          var databaseComments = $("<div class='databaseCommentDiv'>");
+            databaseComments.append("" + data.comment.body + "");
+            databaseComments.append("</div>");
+            databaseComments.append("<button data-id='" + thisId + "' id='deleteComment'>Delete</button>");
+            $("#" + thisId + "").append(databaseComments);
+        }
+
+        var newCommentDiv = $("<div class='newCommentDiv'>");
+          newCommentDiv.append("<h2>Leave a comment</h2>");
+          newCommentDiv.append("<textarea id='commentInput' name='body'></textarea>");
+          newCommentDiv.append("<button data-id='" + thisId + "' id='saveComment'>Save comment</button>");
+        console.log(newCommentDiv);
+        $("#" + thisId + "").append(newCommentDiv);
+      });
+    
+  });
+
+  $(document).on("click", "#saveComment", function() {
+    console.log("clicked");
+    var thisId = $(this).attr("data-id");
+
+    console.log(thisId);
+    $.ajax({
+      method: "POST",
+      url: "/articles/" + thisId,
+      data: {
+        body: $("#commentInput").val()
+      }
+    })
+      .then(function(data) {
+        console.log(data);
+      });
+  });
+
+  $(document).on("click", "#deleteComment", function() {
+    console.log("clicked");
+  });
+
+</script>

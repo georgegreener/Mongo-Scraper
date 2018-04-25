@@ -35,10 +35,8 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Our server routes will be imported here
-var scrape = require("./controllers/scrape");
-var main = require("./controllers/main");
-app.use(scrape);
-app.use(main);
+var controller = require("./controllers/controller");
+app.use(controller);
 
 // Starts server
 app.listen(PORT, function() {
